@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+from io import BytesIO  # For handling in-memory file operations
 
 def generate_random_numbers(ranges):
     data = {}
@@ -28,24 +29,22 @@ for i in range(num_ranges):
     else:
         st.warning(f"Ensure that lower bound is less than upper bound for Column {i+1}")
 
-
 df = None
 if st.button("Generate Random Numbers"):
     if ranges:
         df = generate_random_numbers(ranges)
         st.session_state.df = df
         st.write("Generated Data:", df)
-    
 
 if 'df' in st.session_state:
     df = st.session_state.df
     
-    # User-defined column operations
-    st.subheader("Create a New Column with Operations")
-    selected_cols = st.multiselect("Select columns to perform operation on", df.columns)
-    operation = st.selectbox("Select operation", ["Add", "Subtract", "Multiply", "Divide"])
+    # Optional: User-defined column operations
+    st.subheader("Create a New Column with Operations (Optional)")
+    selected_cols = st.multiselect("Select columns to perform operation on (leave empty if not needed)", df.columns)
     
     if selected_cols and len(selected_cols) > 1:
+        operation = st.selectbox("Select operation", ["Add", "Subtract", "Multiply", "Divide"])
         new_col_name = f"{' '.join(selected_cols)} {operation}"
         
         if operation == "Add":
@@ -61,10 +60,17 @@ if 'df' in st.session_state:
                 st.error("Division by zero encountered in operation.")
         
         st.write("Updated Data with New Column:", df)
-        
-        # Save to Excel
-        excel_filename = "random_numbers.xlsx"
-        df.to_excel(excel_filename, index=True)
-        
-        with open(excel_filename, "rb") as f:
-            st.download_button("Download Excel File", f, file_name=excel_filename, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+    # Save to an in-memory buffer instead of writing to disk
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=True)
+    output.seek(0)  # Reset buffer position to start
+    
+    # Download button
+    st.download_button(
+        label="Download Excel File",
+        data=output,
+        file_name="random_numbers.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
