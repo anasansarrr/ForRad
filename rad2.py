@@ -41,32 +41,35 @@ if 'df' in st.session_state:
     
     # Optional: User-defined column operations
     st.subheader("Create a New Column with Operations (Optional)")
-    selected_cols = st.multiselect("Select columns to perform operation on (leave empty if not needed)", df.columns)
+    selected_cols = st.multiselect("Select columns to perform operation on", df.columns, key="selected_cols")
     
-    if selected_cols and len(selected_cols) > 1:
-        operation = st.selectbox("Select operation", ["Add", "Subtract", "Multiply", "Divide"])
-        new_col_name = f"{' '.join(selected_cols)} {operation}"
-        
-        if operation == "Add":
-            df[new_col_name] = df[selected_cols].sum(axis=1)
-        elif operation == "Subtract":
-            df[new_col_name] = df[selected_cols[0]] - df[selected_cols[1]]
-        elif operation == "Multiply":
-            df[new_col_name] = df[selected_cols].prod(axis=1)
-        elif operation == "Divide":
-            try:
-                df[new_col_name] = df[selected_cols[0]] / df[selected_cols[1]]
-            except ZeroDivisionError:
-                st.error("Division by zero encountered in operation.")
-        
-        st.write("Updated Data with New Column:", df)
+    # Only show operation selector if at least two columns are selected
+    if len(selected_cols) >= 2:
+        operation = st.selectbox("Select operation", ["Add", "Subtract", "Multiply", "Divide"], key="operation_type")
+
+        if st.button("Perform Operation"):
+            new_col_name = f"{' '.join(selected_cols)} {operation}"
+            
+            if operation == "Add":
+                df[new_col_name] = df[selected_cols].sum(axis=1)
+            elif operation == "Subtract":
+                df[new_col_name] = df[selected_cols[0]] - df[selected_cols[1]]
+            elif operation == "Multiply":
+                df[new_col_name] = df[selected_cols].prod(axis=1)
+            elif operation == "Divide":
+                try:
+                    df[new_col_name] = df[selected_cols[0]] / df[selected_cols[1]]
+                except ZeroDivisionError:
+                    st.error("Division by zero encountered in operation.")
+
+            st.write("Updated Data with New Column:", df)
 
     # Save to an in-memory buffer instead of writing to disk
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=True)
     output.seek(0)  # Reset buffer position to start
-    
+
     # Download button
     st.download_button(
         label="Download Excel File",
