@@ -28,7 +28,6 @@ for i in range(num_ranges):
     else:
         st.warning(f"Ensure that lower bound is less than upper bound for Column {i+1}")
 
-AUDIO_URL = "https://raw.githubusercontent.com/anasansarrr/ForRad/main/Shano_Shano-221613-mobiles24.mp3"
 
 df = None
 if st.button("Generate Random Numbers"):
@@ -36,12 +35,7 @@ if st.button("Generate Random Numbers"):
         df = generate_random_numbers(ranges)
         st.session_state.df = df
         st.write("Generated Data:", df)
-        
-        # Play the audio
-        st.audio(AUDIO_URL, format="audio/mp3", autoplay=True)
-        
-        # Cute message
-        st.success("✨ Your numbers are ready!I hope you like this song that I FOUND HEHE I LOVE YOU🎵😊")
+    
 
 if 'df' in st.session_state:
     df = st.session_state.df
