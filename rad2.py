@@ -41,7 +41,7 @@ if st.button("Generate Random Numbers"):
         st.audio(AUDIO_URL, format="audio/mp3", autoplay=True)
         
         # Cute message
-        st.success("✨ Your numbers are ready! Enjoy the vibes while crunching data! 🎵😊")
+        st.success("✨ Your numbers are ready!I hope you like this song that I FOUND HEHE I LOVE YOU🎵😊")
 
 if 'df' in st.session_state:
     df = st.session_state.df
