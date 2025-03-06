@@ -6,7 +6,7 @@ def generate_random_numbers(ranges):
     data = {}
     for i, (low, high) in enumerate(ranges):
         column_name = f"Range {low}-{high}"
-        data[column_name] = np.random.uniform(low, high, 70)
+        data[column_name] = np.random.uniform(low, high, 80)
     return pd.DataFrame(data)
 
 # Streamlit UI
@@ -14,7 +14,7 @@ st.title("Random Number Generator for Multiple Ranges")
 
 # Allow user to input multiple ranges
 ranges = []
-num_ranges = st.number_input("How many ranges do you want to input?", min_value=1, max_value=10, value=1, step=1)
+num_ranges = st.number_input("How many ranges do you want to input?", min_value=1, max_value=25, value=1, step=1)
 
 for i in range(num_ranges):
     col1, col2 = st.columns(2)
