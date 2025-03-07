@@ -6,7 +6,7 @@ def generate_random_numbers(ranges):
     data = {}
     for i, (low, high) in enumerate(ranges):
         column_name = f"Range {low}-{high}"
-        data[column_name] = np.random.uniform(low, high, 80)
+        data[column_name] = np.random.uniform(low, high, 102)
     return pd.DataFrame(data)
 
 # Streamlit UI
