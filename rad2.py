@@ -3,17 +3,29 @@ import pandas as pd
 import numpy as np
 from io import BytesIO
 
-def generate_random_numbers(ranges):
+def generate_random_numbers(ranges, num_rows, use_whole_numbers):
     """Generates a DataFrame with random numbers for given ranges."""
     data = {}
     for i, (low, high) in enumerate(ranges):
         column_name = f"Column {i+1} (Range {low}-{high})"
-        data[column_name] = np.random.uniform(low, high, 102)
+        if use_whole_numbers:
+            # For whole numbers, we use randint which includes both endpoints
+            data[column_name] = np.random.randint(int(low), int(high) + 1, num_rows)
+        else:
+            # For decimal numbers, we use uniform distribution
+            data[column_name] = np.random.uniform(low, high, num_rows)
     df = pd.DataFrame(data)
     df.index.name = "Index"
     return df
 
 st.title("Enhanced Random Number Generator")
+
+# User input for number of rows to generate
+num_rows = st.number_input("How many numbers do you want to generate per column?", 
+                          min_value=1, max_value=1000, value=100, step=1)
+
+# Option to choose between whole numbers or decimal numbers
+use_whole_numbers = st.checkbox("Generate whole numbers (integers) instead of decimal numbers", value=False)
 
 # User input for ranges
 ranges = []
@@ -33,7 +45,7 @@ for i in range(num_ranges):
 df = None
 if st.button("Generate Random Numbers"):
     if ranges:
-        df = generate_random_numbers(ranges)
+        df = generate_random_numbers(ranges, num_rows, use_whole_numbers)
         st.session_state.df = df  # Store in session state
         st.write("Generated Data:", df)
 
